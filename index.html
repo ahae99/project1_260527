@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>鱷魚爸爸 線上菜單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#B22222;
+    --brand-deep:#8a1a1a;
+    --bg:#f6f3ee;
+    --card:#ffffff;
+    --ink:#2b2b2b;
+    --muted:#8d857a;
+    --line:#ece6dc;
+    --tile:#f4ede4;
+    --header-h:54px;
+    --tabs-h:50px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#d9d4cc;
+    font-family:"Noto Sans TC","Noto Sans JP","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* phone frame — centers a 375px column on larger screens */
+  #app{
+    max-width:375px;
+    margin:0 auto;
+    background:var(--bg);
+    min-height:100vh;
+    position:relative;
+    box-shadow:0 0 40px rgba(0,0,0,.18);
+    overflow-x:hidden;
+  }
+
+  /* ── Header ── */
+  header{
+    position:sticky;top:0;z-index:40;
+    height:var(--header-h);
+    background:rgba(255,255,255,.92);
+    backdrop-filter:saturate(1.4) blur(8px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;
+    transition:box-shadow .2s;
+  }
+  header.scrolled{box-shadow:0 2px 14px rgba(0,0,0,.08);}
+  .brand{display:flex;align-items:center;gap:8px;min-width:0;}
+  .brand .mark{font-size:20px;line-height:1;}
+  .brand .name{font-weight:700;font-size:17px;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .langs{display:flex;gap:4px;flex-shrink:0;}
+  .lang-btn{
+    border:none;background:transparent;color:var(--muted);
+    font-family:inherit;font-size:12px;font-weight:500;
+    padding:5px 7px;border-radius:8px;cursor:pointer;line-height:1;
+    transition:all .15s;
+  }
+  .lang-btn.active{background:var(--brand);color:#fff;font-weight:700;}
+
+  /* ── Hero ── */
+  .hero{position:relative;height:204px;overflow:hidden;background:var(--brand-deep);}
+  .hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .hero-overlay{
+    position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:16px;color:#fff;
+    background:linear-gradient(to top, rgba(0,0,0,.66) 0%, rgba(0,0,0,.18) 46%, rgba(0,0,0,0) 72%);
+  }
+  .hero .h-name{font-weight:900;font-size:27px;letter-spacing:1px;text-shadow:0 2px 12px rgba(0,0,0,.55);line-height:1.1;}
+  .hero .h-tag{font-size:12.5px;opacity:.96;margin-top:4px;letter-spacing:2px;text-shadow:0 1px 8px rgba(0,0,0,.6);}
+
+  /* ── Store info ── */
+  .info{background:var(--card);padding:16px 16px 14px;border-bottom:1px solid var(--line);}
+  .info-row{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;margin-top:9px;}
+  .info-row:first-child{margin-top:0;}
+  .info-row .ico{width:18px;flex-shrink:0;text-align:center;font-size:14px;opacity:.85;}
+  .info-row .lbl{color:var(--muted);font-size:11px;font-weight:500;letter-spacing:.5px;}
+  .info-row a{color:var(--brand);text-decoration:none;font-weight:600;}
+
+  /* ── Notice card ── */
+  .notice{
+    margin:14px 16px 0;background:#fff;border:1px solid var(--line);
+    border-radius:14px;padding:13px 15px;
+  }
+  .notice h3{
+    margin:0 0 8px;font-size:12px;font-weight:700;color:var(--brand);
+    letter-spacing:1px;display:flex;align-items:center;gap:6px;
+  }
+  .notice ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;}
+  .notice li{font-size:12.5px;line-height:1.45;color:#52493f;display:flex;gap:7px;}
+  .notice li::before{content:"";flex-shrink:0;width:5px;height:5px;border-radius:50%;background:var(--brand);margin-top:7px;}
+
+  /* ── Category tabs ── */
+  .tabs{
+    position:sticky;top:var(--header-h);z-index:30;
+    height:var(--tabs-h);background:rgba(246,243,238,.95);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    display:flex;gap:8px;align-items:center;padding:0 14px;
+    overflow-x:auto;scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    font-family:inherit;font-size:13px;font-weight:600;white-space:nowrap;
+    padding:8px 15px;border-radius:999px;cursor:pointer;transition:all .15s;
+  }
+  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+
+  /* ── Sections & cards ── */
+  main{padding:8px 16px 40px;}
+  .section{padding-top:18px;scroll-margin-top:calc(var(--header-h) + var(--tabs-h));}
+  .section-head{display:flex;align-items:baseline;gap:9px;margin-bottom:12px;}
+  .section-head .zh{font-size:19px;font-weight:900;letter-spacing:.5px;}
+  .section-head .sub{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+  .section-head .bar{flex:1;height:1px;background:var(--line);}
+
+  .card{
+    display:flex;gap:13px;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:12px;margin-bottom:11px;cursor:pointer;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .card:active{transform:scale(.985);box-shadow:0 4px 16px rgba(0,0,0,.07);}
+  .tile{
+    width:62px;height:62px;flex-shrink:0;border-radius:13px;background:var(--tile);
+    display:flex;align-items:center;justify-content:center;font-size:32px;line-height:1;
+    overflow:hidden;
+  }
+  .tile img{width:100%;height:100%;object-fit:cover;}
+  .card-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+  .card-name{font-size:16px;font-weight:700;line-height:1.25;}
+  .card-note{font-size:11px;color:var(--muted);margin-top:2px;}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+  .badge{
+    display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;
+    background:#fbeeee;color:var(--brand-deep);border-radius:6px;padding:2px 6px;line-height:1.3;
+  }
+  .badge.spice{background:#fdeede;color:#c2410c;}
+  .badge.veg{background:#eaf5ea;color:#2f7d3a;}
+  .badge.meat{background:#f3eee8;color:#7a5b3a;}
+  .price{display:flex;flex-direction:column;gap:2px;margin-top:7px;}
+  .price-single{font-size:17px;font-weight:800;color:var(--brand);letter-spacing:.3px;}
+  .price-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;}
+  .price-row .pl{color:#52493f;font-weight:500;}
+  .price-row .pv{color:var(--brand);font-weight:800;}
+  .price-market{font-size:15px;font-weight:800;color:var(--brand);}
+
+  /* ── Modal ── */
+  .modal-backdrop{
+    position:fixed;inset:0;z-index:60;background:rgba(20,16,14,.55);
+    backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .22s;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .modal-backdrop.open{opacity:1;pointer-events:auto;}
+  .modal{
+    width:100%;max-width:375px;background:var(--bg);
+    border-radius:22px 22px 0 0;max-height:90vh;overflow-y:auto;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);
+    -webkit-overflow-scrolling:touch;
+  }
+  .modal-backdrop.open .modal{transform:translateY(0);}
+  .modal-img{
+    position:relative;height:230px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 14px, rgba(0,0,0,.04) 14px 28px),
+      linear-gradient(160deg,var(--brand) 0%, var(--brand-deep) 100%);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .modal-img .big-emoji{font-size:104px;line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3));}
+  .modal-img img{width:100%;height:100%;object-fit:cover;touch-action:pinch-zoom;}
+  .modal-close{
+    position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;
+    border:none;background:rgba(255,255,255,.92);color:#2b2b2b;font-size:18px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+  }
+  .grab{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.6);}
+  .modal-body{padding:18px 18px 30px;}
+  .modal-body .m-name{font-size:23px;font-weight:900;line-height:1.2;}
+  .modal-body .badges{margin-top:10px;}
+  .m-price{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px;}
+  .m-price .price-single{font-size:24px;}
+  .m-price .price-row{font-size:15px;padding:2px 0;}
+  .m-block{margin-top:16px;}
+  .m-block .m-lbl{font-size:11px;font-weight:700;color:var(--brand);letter-spacing:1px;margin-bottom:5px;}
+  .m-block p{margin:0;font-size:14px;line-height:1.6;color:#4a423a;}
+
+  footer{padding:22px 16px 30px;text-align:center;color:var(--muted);font-size:11px;line-height:1.7;letter-spacing:.5px;border-top:1px solid var(--line);}
+  footer .fmark{font-size:20px;display:block;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="header">
+    <div class="brand"><span class="mark">🐊</span><span class="name" id="brandName">鱷魚爸爸</span></div>
+    <div class="langs" id="langs">
+      <button class="lang-btn active" data-lang="zh">繁中</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ja">日本語</button>
+      <button class="lang-btn" data-lang="ko">한국어</button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <img class="hero-img" src="images/hero.jpg" alt="鱷魚爸爸 店面">
+    <div class="hero-overlay">
+      <div class="h-name" id="heroName">鱷魚爸爸</div>
+      <div class="h-tag" id="heroTag">道地台式快炒</div>
+    </div>
+  </div>
+
+  <div class="info" id="info"></div>
+  <div class="notice" id="notice"></div>
+
+  <nav class="tabs" id="tabs"></nav>
+  <main id="main"></main>
+
+  <footer id="footer"></footer>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal" id="modalInner"></div>
+</div>
+
+<script src="menu-raw.js"></script>
+<script src="menu-items.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
